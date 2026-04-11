@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flow Bots — Automação Inteligente</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050a0e;
+        --surface: #0c1318;
+        --border: #1a2730;
+        --accent: #00e5ff;
+        --accent2: #39ff14;
+        --text: #e8f4f8;
+        --muted: #5a7a8a;
+        --card: #0f1c24;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        overflow-x: hidden;
+        cursor: none;
+      }
+
+      /* Custom cursor */
+      .cursor {
+        width: 12px;
+        height: 12px;
+        background: var(--accent);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.2s,
+          height 0.2s,
+          opacity 0.2s;
+        mix-blend-mode: screen;
+      }
+      .cursor-ring {
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(0, 229, 255, 0.4);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.12s ease-out,
+          width 0.2s,
+          height 0.2s;
+      }
+
+      /* Grid overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* Noise texture */
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.6;
+      }
+
+      /* ─── NAV ─── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 60px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(5, 10, 14, 0.85);
+        backdrop-filter: blur(16px);
+        z-index: 100;
+      }
+
+      .logo {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 1.3rem;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      .logo span {
+        color: var(--accent);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 36px;
+        list-style: none;
+      }
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--accent);
+      }
+
+      .nav-badge {
+        font-size: 0.68rem;
+        background: rgba(0, 229, 255, 0.1);
+        border: 1px solid rgba(0, 229, 255, 0.25);
+        color: var(--accent);
+        padding: 6px 14px;
+        border-radius: 2px;
+        letter-spacing: 0.08em;
+      }
+
+      /* ─── HERO ─── */
+      .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 140px 60px 100px;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .hero-bg-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        pointer-events: none;
+      }
+      .orb1 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 229, 255, 0.12) 0%,
+          transparent 70%
+        );
+        top: -100px;
+        right: -100px;
+        animation: drift1 8s ease-in-out infinite alternate;
+      }
+      .orb2 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(57, 255, 20, 0.08) 0%,
+          transparent 70%
+        );
+        bottom: 0;
+        left: 10%;
+        animation: drift2 10s ease-in-out infinite alternate;
+      }
+
+      @keyframes drift1 {
+        from {
+          transform: translate(0, 0);
+        }
+        to {
+          transform: translate(-40px, 60px);
+        }
+      }
+      @keyframes drift2 {
+        from {
+          transform: translate(0, 0);
+        }
+        to {
+          transform: translate(40px, -40px);
+        }
+      }
+
+      .hero-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        opacity: 0;
+        animation: fadeUp 0.6s 0.2s forwards;
+      }
+      .hero-label::before {
+        content: "";
+        display: block;
+        width: 32px;
+        height: 1px;
+        background: var(--accent);
+      }
+
+      .hero-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: clamp(3rem, 7vw, 7rem);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        margin-bottom: 32px;
+        opacity: 0;
+        animation: fadeUp 0.7s 0.35s forwards;
+      }
+      .hero-title .outline {
+        -webkit-text-stroke: 1px rgba(0, 229, 255, 0.5);
+        color: transparent;
+      }
+      .hero-title .accent {
+        color: var(--accent);
+      }
+
+      .hero-sub {
+        font-size: 0.95rem;
+        color: var(--muted);
+        max-width: 520px;
+        line-height: 1.7;
+        margin-bottom: 52px;
+        opacity: 0;
+        animation: fadeUp 0.7s 0.5s forwards;
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        opacity: 0;
+        animation: fadeUp 0.7s 0.65s forwards;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--accent);
+        color: var(--bg);
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.06em;
+        padding: 16px 32px;
+        border: none;
+        cursor: none;
+        text-decoration: none;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 12px) 0,
+          100% 12px,
+          100% 100%,
+          12px 100%,
+          0 calc(100% - 12px)
+        );
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 229, 255, 0.3);
+      }
+      .btn-outline {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0.06em;
+        padding: 16px 28px;
+        text-decoration: none;
+        cursor: none;
+        transition:
+          border-color 0.2s,
+          color 0.2s;
+      }
+      .btn-outline:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .hero-stats {
+        position: absolute;
+        bottom: 60px;
+        right: 60px;
+        display: flex;
+        gap: 48px;
+        opacity: 0;
+        animation: fadeUp 0.7s 0.8s forwards;
+      }
+      .stat {
+        text-align: right;
+      }
+      .stat-num {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 2.2rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .stat-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      /* ─── SECTIONS ─── */
+      section {
+        position: relative;
+        padding: 120px 60px;
+        z-index: 1;
+      }
+
+      .section-tag {
+        font-size: 0.65rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-tag::before {
+        content: "//";
+        opacity: 0.4;
+      }
+
+      .section-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+        margin-bottom: 60px;
+      }
+
+      /* ─── HORÁRIO ─── */
+      .horario-section {
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .horario-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px;
+        border: 1px solid var(--border);
+        max-width: 700px;
+      }
+
+      .horario-card {
+        background: var(--card);
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+      .horario-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--accent), transparent);
+      }
+      .horario-card:last-child::before {
+        background: linear-gradient(90deg, var(--accent2), transparent);
+      }
+
+      .h-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 16px;
+      }
+      .h-time {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 3.5rem;
+        letter-spacing: -0.04em;
+        line-height: 1;
+      }
+      .h-time.open {
+        color: var(--accent);
+      }
+      .h-time.close {
+        color: var(--accent2);
+      }
+
+      .horario-desc {
+        margin-top: 40px;
+        color: var(--muted);
+        font-size: 0.85rem;
+        line-height: 1.8;
+        max-width: 400px;
+      }
+
+      /* ─── SERVIÇOS ─── */
+      .servicos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2px;
+      }
+
+      .servico-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 48px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+        cursor: none;
+      }
+      .servico-card:hover {
+        border-color: rgba(0, 229, 255, 0.3);
+        transform: translateY(-4px);
+      }
+      .servico-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 50% 0%,
+          rgba(0, 229, 255, 0.04) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .servico-card:hover::after {
+        opacity: 1;
+      }
+
+      .card-icon {
+        font-size: 2rem;
+        margin-bottom: 24px;
+        display: block;
+      }
+
+      .card-price {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 2.4rem;
+        color: var(--accent);
+        letter-spacing: -0.03em;
+        margin-bottom: 8px;
+        line-height: 1;
+      }
+
+      .card-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        color: var(--text);
+      }
+
+      .card-desc {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.8;
+        margin-bottom: 28px;
+      }
+
+      .card-features {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .card-features li {
+        font-size: 0.78rem;
+        color: var(--muted);
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        line-height: 1.5;
+      }
+      .card-features li::before {
+        content: "→";
+        color: var(--accent);
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .card-cta {
+        margin-top: 36px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+        padding-bottom: 4px;
+        transition: gap 0.2s;
+      }
+      .card-cta:hover {
+        gap: 14px;
+      }
+
+      /* ─── ALERTA ─── */
+      .alert-bar {
+        background: linear-gradient(
+          135deg,
+          rgba(0, 229, 255, 0.08),
+          rgba(57, 255, 20, 0.05)
+        );
+        border: 1px solid rgba(0, 229, 255, 0.2);
+        padding: 24px 40px;
+        margin: 0 60px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 0.85rem;
+        position: relative;
+        z-index: 1;
+      }
+      .alert-bar .alert-icon {
+        font-size: 1.4rem;
+        flex-shrink: 0;
+      }
+      .alert-bar strong {
+        font-family: "Syne", sans-serif;
+        color: var(--accent2);
+      }
+
+      /* ─── FOOTER ─── */
+      footer {
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid var(--border);
+        padding: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 24px;
+      }
+
+      .footer-brand {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 1.1rem;
+      }
+      .footer-brand span {
+        color: var(--accent);
+      }
+
+      .footer-text {
+        font-size: 0.72rem;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+      }
+
+      .footer-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.68rem;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+      }
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent2);
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 6px rgba(57, 255, 20, 0);
+        }
+      }
+
+      /* ─── TICKER ─── */
+      .ticker-wrap {
+        overflow: hidden;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        background: var(--bg);
+        padding: 14px 0;
+        position: relative;
+        z-index: 1;
+      }
+      .ticker-inner {
+        display: flex;
+        gap: 60px;
+        white-space: nowrap;
+        animation: ticker 20s linear infinite;
+        font-size: 0.7rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .ticker-inner span {
+        color: var(--accent);
+        margin: 0 8px;
+      }
+      @keyframes ticker {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      /* ─── ANIMATIONS ─── */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ─── MOBILE ─── */
+      @media (max-width: 768px) {
+        nav {
+          padding: 16px 24px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .hero {
+          padding: 120px 24px 80px;
+        }
+        section {
+          padding: 80px 24px;
+        }
+        .hero-stats {
+          position: static;
+          margin-top: 48px;
+          justify-content: flex-start;
+        }
+        .horario-grid {
+          grid-template-columns: 1fr;
+        }
+        footer {
+          padding: 40px 24px;
+        }
+        .alert-bar {
+          margin: 0 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- NAV -->
+    <nav>
+      <div class="logo">Flow<span>.</span>Bots</div>
+      <ul class="nav-links">
+        <li><a href="#servicos">Serviços</a></li>
+        <li><a href="#horario">Horário</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+      <div class="nav-badge">★ 2026</div>
+    </nav>
+
+    <!-- TICKER -->
+    <div class="ticker-wrap" style="margin-top: 72px">
+      <div class="ticker-inner">
+        <span>✦</span> Automação Inteligente <span>✦</span> Chatbots 24/7
+        <span>✦</span> Criação de Sites <span>✦</span> WhatsApp & Instagram
+        <span>✦</span> Escale seu negócio <span>✦</span> Flow Bots 2026
+        <span>✦</span> Automação Inteligente <span>✦</span> Chatbots 24/7
+        <span>✦</span> Criação de Sites <span>✦</span> WhatsApp & Instagram
+        <span>✦</span> Escale seu negócio <span>✦</span> Flow Bots 2026
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg-orb orb1"></div>
+      <div class="hero-bg-orb orb2"></div>
+
+      <div class="hero-label">🚀 Relatório Operacional — 2026</div>
+
+      <h1 class="hero-title">
+        Automação<br />
+        <span class="outline">Inteligente</span><br />
+        <span class="accent">para empresas</span>
+      </h1>
+
+      <p class="hero-sub">
+        A Flow Bots é uma agência focada em automação inteligente e presença
+        digital para empresas que querem crescer com eficiência em 2026.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#servicos" class="btn-primary">Ver Serviços →</a>
+        <a href="#horario" class="btn-outline">Horário de Atendimento</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">24/7</div>
+          <div class="stat-label">Chatbots Ativos</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Escalabilidade</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2</div>
+          <div class="stat-label">Serviços</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HORÁRIO -->
+    <section class="horario-section" id="horario">
+      <div class="section-tag">Operação</div>
+      <h2 class="section-title reveal">Horário de<br />Funcionamento</h2>
+
+      <div class="horario-grid reveal">
+        <div class="horario-card">
+          <div class="h-label">Abertura</div>
+          <div class="h-time open">14:00</div>
+        </div>
+        <div class="horario-card">
+          <div class="h-label">Encerramento</div>
+          <div class="h-time close">03:00</div>
+        </div>
+      </div>
+
+      <p class="horario-desc reveal">
+        Funcionamos com alta disponibilidade para atender clientes em qualquer
+        momento crítico do negócio. Suporte estendido e implementação ágil —
+        estamos aqui quando você mais precisa.
+      </p>
+    </section>
+
+    <!-- ALERTA -->
+    <div class="alert-bar reveal">
+      <span class="alert-icon">⚠️</span>
+      <p>
+        <strong>Atenção:</strong> Empresas que não automatizam estão
+        literalmente perdendo dinheiro todos os dias. A automação não é mais
+        opcional — é sobrevivência.
+      </p>
+    </div>
+
+    <!-- SERVIÇOS -->
+    <section id="servicos">
+      <div class="section-tag">Nossos Serviços</div>
+      <h2 class="section-title reveal">O que a<br />Flow Bots oferece</h2>
+
+      <div class="servicos-grid">
+        <!-- Card 1 -->
+        <div class="servico-card reveal">
+          <span class="card-icon">🤖</span>
+          <div class="card-price">R$ 2.197</div>
+          <div class="card-title">Chatbots Inteligentes</div>
+          <p class="card-desc">
+            Desenvolvemos chatbots personalizados para empresas que querem
+            automatizar atendimento, aumentar vendas e não perder clientes.
+          </p>
+          <ul class="card-features">
+            <li>Atendimento 24/7 — clientes não esperam horário comercial</li>
+            <li>Respostas instantâneas que aumentam a conversão</li>
+            <li>Redução de custo com equipe de atendimento</li>
+            <li>
+              Escalabilidade: atende 10, 100 ou 1.000 clientes ao mesmo tempo
+            </li>
+            <li>Integração com WhatsApp, Instagram e sites</li>
+            <li>Geração de leads totalmente automática</li>
+          </ul>
+          <a href="#contato" class="card-cta">Contratar agora →</a>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="servico-card reveal">
+          <span class="card-icon">🌐</span>
+          <div class="card-price">R$ 997</div>
+          <div class="card-title">Criação de Sites</div>
+          <p class="card-desc">
+            Sites modernos, rápidos e otimizados para conversão. Presença
+            digital profissional que transmite credibilidade e gera resultados
+            reais.
+          </p>
+          <ul class="card-features">
+            <li>Design moderno e responsivo para todos os dispositivos</li>
+            <li>Otimizado para SEO e velocidade de carregamento</li>
+            <li>Focado em conversão e captação de clientes</li>
+            <li>Integração com ferramentas de marketing digital</li>
+            <li>Entrega ágil com acompanhamento completo</li>
+          </ul>
+          <a href="#contato" class="card-cta">Contratar agora →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contato">
+      <div>
+        <div class="footer-brand">Flow<span>.</span>Bots</div>
+        <div class="footer-text" style="margin-top: 8px">
+          Automação inteligente para empresas que crescem
+        </div>
+      </div>
+      <div class="footer-badge">
+        <div class="pulse-dot"></div>
+        Operacional — Abertura às 14h
+      </div>
+      <div class="footer-text">
+        © 2026 Flow Bots. Todos os direitos reservados.
+      </div>
+    </footer>
+
+    <script>
+      // Custom cursor
+      const cursor = document.getElementById("cursor");
+      const ring = document.getElementById("cursorRing");
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+
+      document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        cursor.style.left = mx + "px";
+        cursor.style.top = my + "px";
+      });
+
+      function animateRing() {
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        ring.style.left = rx + "px";
+        ring.style.top = ry + "px";
+        requestAnimationFrame(animateRing);
+      }
+      animateRing();
+
+      // Scroll reveal
+      const reveals = document.querySelectorAll(".reveal");
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e, i) => {
+            if (e.isIntersecting) {
+              setTimeout(() => e.target.classList.add("visible"), i * 80);
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
+
+      reveals.forEach((el) => observer.observe(el));
+    </script>
+  </body>
+</html>
