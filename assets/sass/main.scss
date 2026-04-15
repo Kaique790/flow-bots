@@ -1,0 +1,179 @@
+@use "variables.scss" as *;
+@use "default.scss" as *;
+@use "header.scss";
+@use "hero.scss";
+@use "problems.scss";
+@use "services.scss";
+@use "about.scss";
+@use "impact.scss";
+@use "steps.scss";
+@use "cta.scss";
+@use "footer.scss";
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  width: 100%;
+  font-size: $text-lg;
+  font-family: $font-base, sans-serif;
+  color: $color-neutral-0;
+
+  @media (max-width: 440px) {
+    font-size: 94%;
+  }
+}
+
+html {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+body {
+  position: relative;
+
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+
+  overflow: hidden;
+
+  background-color: $color-neutral-900;
+}
+
+a,
+button {
+  background: none;
+  color: $color-neutral-900;
+
+  font-size: $text-lg;
+  font-family: $font-base, sans-serif;
+
+  text-decoration: none;
+  border: none;
+
+  cursor: pointer;
+}
+
+ul,
+ol,
+li {
+  list-style: none;
+}
+
+i {
+  font-size: 1.875rem;
+}
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  pointer-events: none;
+
+  transition: all 2s;
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 40px;
+  }
+
+  .text {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    p {
+      max-width: 200px;
+      text-transform: uppercase;
+
+      opacity: 0.75;
+    }
+  }
+
+  .logo-circle {
+    height: 100%;
+    background: #0b2c6b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100px;
+      max-width: 100%;
+    }
+  }
+
+  .logo-text {
+    color: #fff;
+  }
+
+  .logo-text h2 {
+    font-size: 2.25rem;
+  }
+
+  .logo-text span {
+    font-size: 2.25rem;
+    font-family: $font-secondary;
+    margin-left: 1rem;
+  }
+
+  .progress-container {
+    display: flex;
+    gap: 2rem;
+
+    align-items: center;
+  }
+
+  .loading-bar {
+    width: 240px;
+    max-width: 100%;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.692);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .loading-bar span {
+    display: block;
+    height: 100%;
+    width: 40%;
+    background: #ffffff;
+    border-radius: 999px;
+    animation: loading 2.5s ease-in-out infinite;
+  }
+
+  @keyframes loading {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(250%);
+    }
+  }
+
+  .percentage {
+    color: #fff;
+    font-size: 1.25rem;
+    text-align: right;
+    font-weight: 900;
+    margin-top: 5px;
+  }
+}
+
+.smooth-wrapper {
+  display: none;
+}

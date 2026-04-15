@@ -1,0 +1,76 @@
+@use "variables.scss" as *;
+
+.title {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: clamp(2.25rem, 3vw, 4rem);
+    font-weight: $font-weight-bold;
+    letter-spacing: -0.09px;
+    text-transform: uppercase;
+
+    line-height: 1.2;
+
+    div {
+      max-width: fit-content;
+      display: inline;
+    }
+
+    span {
+      font-family: $font-secondary;
+    }
+  }
+
+  p {
+    margin-top: 0.5rem;
+    opacity: 0.75;
+  }
+}
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  cursor: pointer;
+
+  width: fit-content;
+
+  .circle {
+    padding: 0.5rem;
+    border-radius: 999999rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &--primary {
+    background-color: #62ff3b;
+
+    i {
+      color: $color-neutral-900;
+    }
+
+    .circle {
+      background-color: #39ff07;
+      box-shadow: 3px 3px 8px 0 rgba(0, 0, 0, 0.185);
+    }
+  }
+
+  &--secondary {
+    background-color: #000b1c;
+    border: 1px solid rgba($color-primary-500, 0.54);
+    color: $color-neutral-0;
+
+    .circle {
+      background-color: $color-primary-500;
+      box-shadow: 3px 3px 8px 0 rgba(0, 0, 0, 0.64);
+    }
+  }
+}

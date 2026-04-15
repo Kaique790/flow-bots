@@ -1,0 +1,207 @@
+@use "variables.scss" as *;
+
+/* =========================================
+ * HERO
+ * ========================================= */
+
+.hero {
+  min-height: calc(100vh - 6.25rem);
+  margin-top: 5rem;
+
+  position: relative;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  padding-inline: 1rem;
+
+  &__background {
+    position: absolute;
+    top: 20vh;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 184px);
+    pointer-events: none;
+
+    img {
+      width: 100%;
+      height: 70%;
+      object-fit: cover;
+    }
+  }
+
+  &__content {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 2rem;
+    margin-top: 0;
+  }
+
+  .left {
+    min-width: fit-content;
+  }
+
+  .title {
+    max-width: 480px;
+  }
+
+  &__buttons {
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 1rem;
+  }
+
+  .hero__icons {
+    margin-top: 3.375rem;
+    display: flex;
+  }
+
+  .gradient-border {
+    border-radius: 99999999999rem;
+    padding: 1px;
+    background: linear-gradient(to bottom, #ffffff75, #ffffff00 50%);
+    box-shadow: 4px 4px 6px rgba(0, 0, 0, 0.5);
+
+    &:not(:first-child) {
+      margin-left: -2rem;
+    }
+
+    &:nth-child(1) {
+      z-index: 3;
+    }
+    &:nth-child(2) {
+      z-index: 2;
+    }
+    &:nth-child(3) {
+      z-index: 1;
+    }
+  }
+
+  .gradient-border > icon-circle {
+    background: white;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .icon-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 102px;
+    height: 102px;
+    background-color: $color-primary-500;
+    border-radius: 999999rem;
+
+    i {
+      opacity: 0.5;
+      font-size: 2rem;
+      background: linear-gradient(to bottom, #ffffff, #ffffff00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .baloons {
+    margin-top: 4rem;
+    width: 100%;
+
+    img {
+      display: block;
+      margin-top: 1.5rem;
+    }
+
+    img:first-child {
+      width: 140px;
+    }
+
+    img:nth-child(2) {
+      width: 290px;
+    }
+
+    img:first-child,
+    img:last-child {
+      margin-left: auto;
+    }
+  }
+
+  @media (width >= 600px) {
+    &__buttons {
+      flex-direction: row;
+    }
+  }
+
+  @media (width >= 600px) {
+    &__background {
+      img {
+        height: auto;
+      }
+    }
+  }
+
+  @media (width >= 940px) {
+    max-width: 1340px;
+    margin-inline: auto;
+
+    &__content {
+      min-width: 100%;
+
+      flex-direction: row;
+      gap: 12vw;
+    }
+
+    .baloons {
+      max-width: 400px;
+
+      img {
+        display: block;
+        margin-top: 1.5rem;
+      }
+
+      img:first-child {
+        width: 10vw;
+      }
+
+      img:nth-child(2) {
+        width: 20vw;
+      }
+
+      img:nth-child(3) {
+        width: 9vw;
+      }
+
+      img:first-child,
+      img:last-child {
+        margin-left: auto;
+      }
+    }
+
+    &__background {
+      position: absolute;
+      top: 50px;
+      left: auto;
+      right: 0;
+      width: 90vw;
+      max-width: 1000px;
+
+      img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+    }
+
+    & .hero__icons {
+      margin-top: 6rem;
+    }
+  }
+}

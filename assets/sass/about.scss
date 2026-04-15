@@ -1,0 +1,164 @@
+@use "variables.scss" as *;
+
+.about {
+  padding-top: 5rem;
+  max-width: 1340px;
+  margin-inline: auto;
+
+  margin-top: 5rem;
+
+  position: relative;
+
+  .title {
+    max-width: 540px;
+
+    h2 {
+      font-size: clamp(2rem, 2vh, 3rem);
+    }
+  }
+
+  &__top {
+    padding-inline: 1rem;
+  }
+
+  &__buttons {
+    padding-top: 2em;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 1rem;
+  }
+
+  &__cards {
+    display: flex;
+    flex-direction: row;
+
+    flex-wrap: wrap;
+    position: relative;
+
+    gap: $space-8;
+    padding-top: 4rem;
+    padding-inline: $space-4;
+  }
+
+  .about-deco {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  @media (width >= 820px) {
+    &__cards {
+      flex-direction: row;
+    }
+  }
+
+  @media (width >= 1340px) {
+    .about-deco {
+      display: none;
+    }
+  }
+}
+
+.about__card {
+  background: $color-neutral-900;
+  border-radius: 16px;
+  padding: $space-8;
+  display: flex;
+  gap: $space-8;
+  align-items: center;
+
+  width: 100%;
+  max-width: 380px;
+
+  border: 1px solid #424242;
+
+  &-image img {
+    width: 100%;
+    max-width: 120px;
+    height: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    width: 100%;
+  }
+
+  &-title {
+    font-weight: 400;
+  }
+
+  &-description {
+    font-size: $text-lg;
+    opacity: 0.75;
+    margin: 0;
+    line-height: $line-height-normal;
+  }
+
+  @media (width >= 620px) {
+    max-width: 260px;
+    &-image img {
+      max-width: 90px;
+    }
+
+    &-title {
+      font-size: clamp(0.75rem, 2vw, 1.125rem);
+    }
+  }
+
+  @media (width >= 820px) {
+    max-width: 330px;
+    &-title {
+      font-size: clamp(2vh, 0.875rem, 1.125rem);
+    }
+  }
+
+  @media (width >= 940px) {
+    &-title {
+      font-size: clamp(1rem, 1rem, 1.125rem);
+    }
+  }
+
+  @media (width >= 990px) {
+    &-title {
+      font-size: 1.125rem;
+    }
+  }
+
+  @media (width >= 1260px) {
+    max-width: 380px;
+  }
+}
+
+.about .video-container {
+  width: 830px;
+  z-index: -1;
+
+  position: absolute;
+  top: 5rem;
+  right: 0;
+
+  display: none;
+
+  video {
+    width: 100%;
+  }
+
+  @media (width>= 830px) {
+    display: block;
+  }
+}

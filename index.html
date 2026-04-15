@@ -1,921 +1,644 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flow Bots — Automação Inteligente</title>
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Oooh+Baby&display=swap"
       rel="stylesheet"
     />
-    <style>
-      :root {
-        --bg: #050a0e;
-        --surface: #0c1318;
-        --border: #1a2730;
-        --accent: #00e5ff;
-        --accent2: #39ff14;
-        --text: #e8f4f8;
-        --muted: #5a7a8a;
-        --card: #0f1c24;
-      }
+    <!-- ####### -->
 
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <!-- ### -->
 
-      html {
-        scroll-behavior: smooth;
-      }
+    <!-- PHOSPHOR & FEATHER ICONS -->
+    <link rel="stylesheet" href="assets/css/styles.css" />
 
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: "DM Mono", monospace;
-        overflow-x: hidden;
-        cursor: none;
-      }
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"
+    />
+    <!-- ### -->
 
-      /* Custom cursor */
-      .cursor {
-        width: 12px;
-        height: 12px;
-        background: var(--accent);
-        border-radius: 50%;
-        position: fixed;
-        pointer-events: none;
-        z-index: 9999;
-        transform: translate(-50%, -50%);
-        transition:
-          width 0.2s,
-          height 0.2s,
-          opacity 0.2s;
-        mix-blend-mode: screen;
-      }
-      .cursor-ring {
-        width: 36px;
-        height: 36px;
-        border: 1px solid rgba(0, 229, 255, 0.4);
-        border-radius: 50%;
-        position: fixed;
-        pointer-events: none;
-        z-index: 9998;
-        transform: translate(-50%, -50%);
-        transition:
-          transform 0.12s ease-out,
-          width 0.2s,
-          height 0.2s;
-      }
+    <link
+      rel="shortcut icon"
+      href="./assets/images/logo.svg"
+      type="image/svg+xml"
+    />
 
-      /* Grid overlay */
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background-image:
-          linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
-        background-size: 60px 60px;
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      /* Noise texture */
-      body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-        pointer-events: none;
-        z-index: 0;
-        opacity: 0.6;
-      }
-
-      /* ─── NAV ─── */
-      nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 60px;
-        border-bottom: 1px solid var(--border);
-        background: rgba(5, 10, 14, 0.85);
-        backdrop-filter: blur(16px);
-        z-index: 100;
-      }
-
-      .logo {
-        font-family: "Syne", sans-serif;
-        font-weight: 800;
-        font-size: 1.3rem;
-        letter-spacing: -0.02em;
-        color: var(--text);
-      }
-      .logo span {
-        color: var(--accent);
-      }
-
-      .nav-links {
-        display: flex;
-        gap: 36px;
-        list-style: none;
-      }
-      .nav-links a {
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 0.72rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        transition: color 0.2s;
-      }
-      .nav-links a:hover {
-        color: var(--accent);
-      }
-
-      .nav-badge {
-        font-size: 0.68rem;
-        background: rgba(0, 229, 255, 0.1);
-        border: 1px solid rgba(0, 229, 255, 0.25);
-        color: var(--accent);
-        padding: 6px 14px;
-        border-radius: 2px;
-        letter-spacing: 0.08em;
-      }
-
-      /* ─── HERO ─── */
-      .hero {
-        position: relative;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 140px 60px 100px;
-        overflow: hidden;
-        z-index: 1;
-      }
-
-      .hero-bg-orb {
-        position: absolute;
-        border-radius: 50%;
-        filter: blur(120px);
-        pointer-events: none;
-      }
-      .orb1 {
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(
-          circle,
-          rgba(0, 229, 255, 0.12) 0%,
-          transparent 70%
-        );
-        top: -100px;
-        right: -100px;
-        animation: drift1 8s ease-in-out infinite alternate;
-      }
-      .orb2 {
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(
-          circle,
-          rgba(57, 255, 20, 0.08) 0%,
-          transparent 70%
-        );
-        bottom: 0;
-        left: 10%;
-        animation: drift2 10s ease-in-out infinite alternate;
-      }
-
-      @keyframes drift1 {
-        from {
-          transform: translate(0, 0);
-        }
-        to {
-          transform: translate(-40px, 60px);
-        }
-      }
-      @keyframes drift2 {
-        from {
-          transform: translate(0, 0);
-        }
-        to {
-          transform: translate(40px, -40px);
-        }
-      }
-
-      .hero-label {
-        font-size: 0.7rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--accent);
-        margin-bottom: 24px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        opacity: 0;
-        animation: fadeUp 0.6s 0.2s forwards;
-      }
-      .hero-label::before {
-        content: "";
-        display: block;
-        width: 32px;
-        height: 1px;
-        background: var(--accent);
-      }
-
-      .hero-title {
-        font-family: "Syne", sans-serif;
-        font-weight: 800;
-        font-size: clamp(3rem, 7vw, 7rem);
-        line-height: 0.95;
-        letter-spacing: -0.04em;
-        margin-bottom: 32px;
-        opacity: 0;
-        animation: fadeUp 0.7s 0.35s forwards;
-      }
-      .hero-title .outline {
-        -webkit-text-stroke: 1px rgba(0, 229, 255, 0.5);
-        color: transparent;
-      }
-      .hero-title .accent {
-        color: var(--accent);
-      }
-
-      .hero-sub {
-        font-size: 0.95rem;
-        color: var(--muted);
-        max-width: 520px;
-        line-height: 1.7;
-        margin-bottom: 52px;
-        opacity: 0;
-        animation: fadeUp 0.7s 0.5s forwards;
-      }
-
-      .hero-cta {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        opacity: 0;
-        animation: fadeUp 0.7s 0.65s forwards;
-      }
-      .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        background: var(--accent);
-        color: var(--bg);
-        font-family: "Syne", sans-serif;
-        font-weight: 700;
-        font-size: 0.85rem;
-        letter-spacing: 0.06em;
-        padding: 16px 32px;
-        border: none;
-        cursor: none;
-        text-decoration: none;
-        clip-path: polygon(
-          0 0,
-          calc(100% - 12px) 0,
-          100% 12px,
-          100% 100%,
-          12px 100%,
-          0 calc(100% - 12px)
-        );
-        transition:
-          transform 0.2s,
-          box-shadow 0.2s;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 40px rgba(0, 229, 255, 0.3);
-      }
-      .btn-outline {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        border: 1px solid var(--border);
-        color: var(--text);
-        font-family: "DM Mono", monospace;
-        font-size: 0.8rem;
-        letter-spacing: 0.06em;
-        padding: 16px 28px;
-        text-decoration: none;
-        cursor: none;
-        transition:
-          border-color 0.2s,
-          color 0.2s;
-      }
-      .btn-outline:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-
-      .hero-stats {
-        position: absolute;
-        bottom: 60px;
-        right: 60px;
-        display: flex;
-        gap: 48px;
-        opacity: 0;
-        animation: fadeUp 0.7s 0.8s forwards;
-      }
-      .stat {
-        text-align: right;
-      }
-      .stat-num {
-        font-family: "Syne", sans-serif;
-        font-weight: 800;
-        font-size: 2.2rem;
-        color: var(--accent);
-        line-height: 1;
-      }
-      .stat-label {
-        font-size: 0.65rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-top: 4px;
-      }
-
-      /* ─── SECTIONS ─── */
-      section {
-        position: relative;
-        padding: 120px 60px;
-        z-index: 1;
-      }
-
-      .section-tag {
-        font-size: 0.65rem;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--accent);
-        margin-bottom: 16px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .section-tag::before {
-        content: "//";
-        opacity: 0.4;
-      }
-
-      .section-title {
-        font-family: "Syne", sans-serif;
-        font-weight: 800;
-        font-size: clamp(2rem, 4vw, 3.5rem);
-        letter-spacing: -0.03em;
-        line-height: 1.05;
-        margin-bottom: 60px;
-      }
-
-      /* ─── HORÁRIO ─── */
-      .horario-section {
-        background: var(--surface);
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-      }
-
-      .horario-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2px;
-        border: 1px solid var(--border);
-        max-width: 700px;
-      }
-
-      .horario-card {
-        background: var(--card);
-        padding: 40px;
-        position: relative;
-        overflow: hidden;
-      }
-      .horario-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, var(--accent), transparent);
-      }
-      .horario-card:last-child::before {
-        background: linear-gradient(90deg, var(--accent2), transparent);
-      }
-
-      .h-label {
-        font-size: 0.65rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-bottom: 16px;
-      }
-      .h-time {
-        font-family: "Syne", sans-serif;
-        font-weight: 800;
-        font-size: 3.5rem;
-        letter-spacing: -0.04em;
-        line-height: 1;
-      }
-      .h-time.open {
-        color: var(--accent);
-      }
-      .h-time.close {
-        color: var(--accent2);
-      }
-
-      .horario-desc {
-        margin-top: 40px;
-        color: var(--muted);
-        font-size: 0.85rem;
-        line-height: 1.8;
-        max-width: 400px;
-      }
-
-      /* ─── SERVIÇOS ─── */
-      .servicos-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 2px;
-      }
-
-      .servico-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        padding: 48px;
-        position: relative;
-        overflow: hidden;
-        transition:
-          border-color 0.3s,
-          transform 0.3s;
-        cursor: none;
-      }
-      .servico-card:hover {
-        border-color: rgba(0, 229, 255, 0.3);
-        transform: translateY(-4px);
-      }
-      .servico-card::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          circle at 50% 0%,
-          rgba(0, 229, 255, 0.04) 0%,
-          transparent 70%
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .servico-card:hover::after {
-        opacity: 1;
-      }
-
-      .card-icon {
-        font-size: 2rem;
-        margin-bottom: 24px;
-        display: block;
-      }
-
-      .card-price {
-        font-family: "Syne", sans-serif;
-        font-weight: 800;
-        font-size: 2.4rem;
-        color: var(--accent);
-        letter-spacing: -0.03em;
-        margin-bottom: 8px;
-        line-height: 1;
-      }
-
-      .card-title {
-        font-family: "Syne", sans-serif;
-        font-weight: 700;
-        font-size: 1.2rem;
-        margin-bottom: 20px;
-        color: var(--text);
-      }
-
-      .card-desc {
-        font-size: 0.82rem;
-        color: var(--muted);
-        line-height: 1.8;
-        margin-bottom: 28px;
-      }
-
-      .card-features {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .card-features li {
-        font-size: 0.78rem;
-        color: var(--muted);
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        line-height: 1.5;
-      }
-      .card-features li::before {
-        content: "→";
-        color: var(--accent);
-        flex-shrink: 0;
-        margin-top: 1px;
-      }
-
-      .card-cta {
-        margin-top: 36px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.75rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--accent);
-        text-decoration: none;
-        border-bottom: 1px solid rgba(0, 229, 255, 0.3);
-        padding-bottom: 4px;
-        transition: gap 0.2s;
-      }
-      .card-cta:hover {
-        gap: 14px;
-      }
-
-      /* ─── ALERTA ─── */
-      .alert-bar {
-        background: linear-gradient(
-          135deg,
-          rgba(0, 229, 255, 0.08),
-          rgba(57, 255, 20, 0.05)
-        );
-        border: 1px solid rgba(0, 229, 255, 0.2);
-        padding: 24px 40px;
-        margin: 0 60px;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        font-size: 0.85rem;
-        position: relative;
-        z-index: 1;
-      }
-      .alert-bar .alert-icon {
-        font-size: 1.4rem;
-        flex-shrink: 0;
-      }
-      .alert-bar strong {
-        font-family: "Syne", sans-serif;
-        color: var(--accent2);
-      }
-
-      /* ─── FOOTER ─── */
-      footer {
-        position: relative;
-        z-index: 1;
-        border-top: 1px solid var(--border);
-        padding: 60px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 24px;
-      }
-
-      .footer-brand {
-        font-family: "Syne", sans-serif;
-        font-weight: 800;
-        font-size: 1.1rem;
-      }
-      .footer-brand span {
-        color: var(--accent);
-      }
-
-      .footer-text {
-        font-size: 0.72rem;
-        color: var(--muted);
-        letter-spacing: 0.08em;
-      }
-
-      .footer-badge {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.68rem;
-        color: var(--muted);
-        letter-spacing: 0.1em;
-      }
-      .pulse-dot {
-        width: 8px;
-        height: 8px;
-        background: var(--accent2);
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.4);
-        }
-        50% {
-          box-shadow: 0 0 0 6px rgba(57, 255, 20, 0);
-        }
-      }
-
-      /* ─── TICKER ─── */
-      .ticker-wrap {
-        overflow: hidden;
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
-        background: var(--bg);
-        padding: 14px 0;
-        position: relative;
-        z-index: 1;
-      }
-      .ticker-inner {
-        display: flex;
-        gap: 60px;
-        white-space: nowrap;
-        animation: ticker 20s linear infinite;
-        font-size: 0.7rem;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-      .ticker-inner span {
-        color: var(--accent);
-        margin: 0 8px;
-      }
-      @keyframes ticker {
-        from {
-          transform: translateX(0);
-        }
-        to {
-          transform: translateX(-50%);
-        }
-      }
-
-      /* ─── ANIMATIONS ─── */
-      @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(24px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .reveal {
-        opacity: 0;
-        transform: translateY(30px);
-        transition:
-          opacity 0.7s ease,
-          transform 0.7s ease;
-      }
-      .reveal.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      /* ─── MOBILE ─── */
-      @media (max-width: 768px) {
-        nav {
-          padding: 16px 24px;
-        }
-        .nav-links {
-          display: none;
-        }
-        .hero {
-          padding: 120px 24px 80px;
-        }
-        section {
-          padding: 80px 24px;
-        }
-        .hero-stats {
-          position: static;
-          margin-top: 48px;
-          justify-content: flex-start;
-        }
-        .horario-grid {
-          grid-template-columns: 1fr;
-        }
-        footer {
-          padding: 40px 24px;
-        }
-        .alert-bar {
-          margin: 0 24px;
-        }
-      }
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flow Bots</title>
   </head>
   <body>
-    <div class="cursor" id="cursor"></div>
-    <div class="cursor-ring" id="cursorRing"></div>
+    <div class="preloader" id="preloader">
+      <div class="logo-container">
+        <div class="logo-circle">
+          <img src="./assets/images/logo.svg" alt="" />
+        </div>
 
-    <!-- NAV -->
-    <nav>
-      <div class="logo">Flow<span>.</span>Bots</div>
-      <ul class="nav-links">
-        <li><a href="#servicos">Serviços</a></li>
-        <li><a href="#horario">Horário</a></li>
-        <li><a href="#contato">Contato</a></li>
-      </ul>
-      <div class="nav-badge">★ 2026</div>
-    </nav>
+        <div class="logo-text">
+          <h2>FLOW</h2>
+          <span>BOTS</span>
+        </div>
+      </div>
 
-    <!-- TICKER -->
-    <div class="ticker-wrap" style="margin-top: 72px">
-      <div class="ticker-inner">
-        <span>✦</span> Automação Inteligente <span>✦</span> Chatbots 24/7
-        <span>✦</span> Criação de Sites <span>✦</span> WhatsApp & Instagram
-        <span>✦</span> Escale seu negócio <span>✦</span> Flow Bots 2026
-        <span>✦</span> Automação Inteligente <span>✦</span> Chatbots 24/7
-        <span>✦</span> Criação de Sites <span>✦</span> WhatsApp & Instagram
-        <span>✦</span> Escale seu negócio <span>✦</span> Flow Bots 2026
+      <div class="progress-container">
+        <div class="loading-bar">
+          <span></span>
+        </div>
+        <div class="percentage preloader-text" id="percent">0%</div>
       </div>
     </div>
 
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-bg-orb orb1"></div>
-      <div class="hero-bg-orb orb2"></div>
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <header class="header">
+          <div class="header__background"></div>
+          <div class="header__logo">
+            <img src="./assets/images/logo.svg" alt="Flow Bots Logo" />
+          </div>
+          <button class="header__menu">
+            <img src="./assets/images/menu-icon.svg" alt="Menu" />
+          </button>
+        </header>
 
-      <div class="hero-label">🚀 Relatório Operacional — 2026</div>
+        <section class="hero">
+          <div class="hero__background">
+            <img src="./assets/images/hero-bg.svg" alt="" />
+            <div class="hero__overlay"></div>
+          </div>
+          <div class="hero__content">
+            <div class="left">
+              <div class="title">
+                <h1>Automação <span>Inteligente</span> para empresas</h1>
+                <p>
+                  A Flow Bots é uma agência focada em automação inteligente e
+                  presença digital para empresas que querem crescer com
+                  eficiência em 2026.
+                </p>
+              </div>
+              <div class="hero__buttons">
+                <button class="btn btn--primary hero-show-w-blur">
+                  Fale conosco
+                  <div class="circle">
+                    <i data-feather="arrow-up-right"></i>
+                  </div>
+                </button>
+                <button class="btn btn--secondary hero-show-w-blur">
+                  Nossos serviços
+                  <div class="circle">
+                    <i data-feather="arrow-up-right"></i>
+                  </div>
+                </button>
+              </div>
 
-      <h1 class="hero-title">
-        Automação<br />
-        <span class="outline">Inteligente</span><br />
-        <span class="accent">para empresas</span>
-      </h1>
+              <div class="hero__icons">
+                <div class="gradient-border">
+                  <div class="icon-circle">
+                    <i class="ph ph-head-circuit"></i>
+                  </div>
+                </div>
 
-      <p class="hero-sub">
-        A Flow Bots é uma agência focada em automação inteligente e presença
-        digital para empresas que querem crescer com eficiência em 2026.
-      </p>
+                <div class="gradient-border">
+                  <div class="icon-circle">
+                    <i class="ph ph-building-office"></i>
+                  </div>
+                </div>
 
-      <div class="hero-cta">
-        <a href="#servicos" class="btn-primary">Ver Serviços →</a>
-        <a href="#horario" class="btn-outline">Horário de Atendimento</a>
+                <div class="gradient-border">
+                  <div class="icon-circle">
+                    <i class="ph ph-robot"></i>
+                  </div>
+                </div>
+
+                <div class="gradient-border">
+                  <div class="icon-circle">
+                    <i class="ph ph-user-sound"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="baloons">
+              <img src="assets/images/flow-bots.svg" alt="" />
+              <img src="assets/images/bots-ativos.svg" alt="" />
+              <img src="assets/images/up-circle.svg" alt="" />
+            </div>
+          </div>
+        </section>
+
+        <section class="problems">
+          <div class="title">
+            <h2>
+              Principais <span>dores</span> que sua empresa precisa
+              <span>solucionar:</span>
+            </h2>
+          </div>
+
+          <div class="problems__content">
+            <div class="problems__card">
+              <div class="problems__card-image">
+                <img src="./assets/images/card-1.svg" alt="" />
+              </div>
+              <div class="problems__card-text">
+                <h3>Falta de Tempo</h3>
+                <p>
+                  O empresário fica preso em tarefas operacionais repetitivas,
+                  sem tempo para estratégia e crescimento.
+                </p>
+              </div>
+            </div>
+
+            <div class="problems__card">
+              <div class="problems__card-image">
+                <img src="./assets/images/card-2.svg" alt="" />
+              </div>
+              <div class="problems__card-text">
+                <h3>Perda de Leads</h3>
+                <p>
+                  Clientes em potencial chegam fora do horário comercial e vão
+                  embora sem resposta. Perda de receita!
+                </p>
+              </div>
+            </div>
+
+            <div class="problems__card">
+              <div class="problems__card-image">
+                <img src="./assets/images/card-3.svg" alt="" />
+              </div>
+              <div class="problems__card-text">
+                <h3>Competição</h3>
+                <p>
+                  Concorrentes menores com IA estão superando empresas maiores
+                  que ainda operam no manual.
+                </p>
+              </div>
+            </div>
+
+            <div class="problems__image">
+              <img src="./assets/images/problems-bg.svg" alt="" />
+            </div>
+          </div>
+
+          <div class="transition">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </section>
+
+        <section class="services">
+          <div class="title">
+            <h2 class="textoAnimado">
+              O que <span>oferecemos</span> para sua empresa<span>?</span>
+            </h2>
+          </div>
+
+          <div class="services__buttons">
+            <button class="btn btn--primary show-w-blur">
+              Fale conosco
+              <div class="circle">
+                <i data-feather="arrow-up-right"></i>
+              </div>
+            </button>
+            <button class="btn btn--secondary show-w-blur">
+              Nossos serviços
+              <div class="circle">
+                <i data-feather="arrow-up-right"></i>
+              </div>
+            </button>
+          </div>
+
+          <div class="services__cards">
+            <article class="services__card services__card--light show-w-blur">
+              <div class="services__card-content">
+                <h2>Sites modernos</h2>
+                <p>
+                  Websites são cruciais para alavancar vendas e alcançar novos
+                  clientes.
+                </p>
+                <ul>
+                  <li>Design estratégico e personalizado</li>
+                  <li>Otimização para dispositivos móveis</li>
+                  <li>Estrutura orientada para vendas</li>
+                  <li>Integração com ferramentas digitais</li>
+                  <li>Novos clientes a todo momento</li>
+                </ul>
+                <button class="btn btn--secondary">
+                  Quero para mim
+                  <div class="circle">
+                    <i data-feather="arrow-up-right"></i>
+                  </div>
+                </button>
+              </div>
+              <div class="services__phone-img">
+                <img src="assets/images/services-phone.svg" alt="" />
+                <img
+                  class="decoration"
+                  src="assets/images/card-decoration-1.svg"
+                  alt=""
+                />
+              </div>
+            </article>
+
+            <article class="services__card services__card--dark show-w-blur">
+              <div class="services__card-content">
+                <h2>Automação com Agentes de IA</h2>
+                <p>
+                  Implementação de sistemas inteligentes que automatizam
+                  atendimento, processos internos e geração de oportunidades.
+                </p>
+                <ul>
+                  <li>Atendimento automatizado 24h</li>
+                  <li>Redução de custos operacionais</li>
+                  <li>Aumento na conversão de leads</li>
+                  <li>Padronização de processos</li>
+                  <li>Escalabilidade do negócio</li>
+                </ul>
+                <button class="btn btn--primary services__action">
+                  Quero para mim
+                  <div class="circle">
+                    <i data-feather="arrow-up-right"></i>
+                  </div>
+                </button>
+              </div>
+              <div class="services__robot-img">
+                <img src="assets/images/service-robot.svg" alt="" />
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="about">
+          <div class="about__top">
+            <div class="title">
+              <h2 class="textoAnimado2">
+                A FlowBots Agência combina estratégia, tecnologia e automação
+                com IA para ajudar empresas a crescerem com previsibilidade,
+                eficiência e escala.
+              </h2>
+            </div>
+            <div class="about__buttons">
+              <button class="btn btn--primary">
+                Fale conosco
+                <div class="circle">
+                  <i data-feather="arrow-up-right"></i>
+                </div>
+              </button>
+              <button class="btn btn--secondary">
+                Nossos serviços
+                <div class="circle">
+                  <i data-feather="arrow-up-right"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="about__cards">
+            <div class="about__card">
+              <div class="about__card-image">
+                <img
+                  src="assets/images/about-card-1.png"
+                  alt="Crescimento previsível e escalável"
+                />
+              </div>
+              <div class="about__card-content">
+                <h3 class="about__card-title">Estratégia que gera resultado</h3>
+              </div>
+            </div>
+
+            <div class="about__card">
+              <div class="about__card-image">
+                <img
+                  src="assets/images/about-card-2.png"
+                  alt="Crescimento previsível e escalável"
+                />
+              </div>
+              <div class="about__card-content">
+                <h3 class="about__card-title">
+                  Automação que trabalha por você
+                </h3>
+              </div>
+            </div>
+
+            <div class="about__card">
+              <div class="about__card-image">
+                <img
+                  src="assets/images/about-card-3.png"
+                  alt="Crescimento previsível e escalável"
+                />
+              </div>
+              <div class="about__card-content">
+                <h3 class="about__card-title">
+                  Crescimento previsível e escalável
+                </h3>
+              </div>
+            </div>
+
+            <svg
+              width="427"
+              height="993"
+              viewBox="0 0 427 993"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              class="about-deco"
+            >
+              <g opacity="0.3" filter="url(#filter0_f_158_761)">
+                <path
+                  d="M447.023 121.277C447.023 121.277 368.444 18.5801 316.601 67.7028C286.523 96.2031 294.432 109.977 274.023 112.203C191.523 121.203 215.229 67.7807 134.475 109.234C-0.0148037 178.272 75.5606 398.072 75.5606 398.072C75.5606 398.072 294.725 654.45 250.592 831.626C206.459 1008.8 119.86 910.911 119.86 910.911"
+                  stroke="#5DE3E6"
+                  stroke-width="20"
+                />
+              </g>
+              <defs>
+                <filter
+                  id="filter0_f_158_761"
+                  x="-9.91821e-05"
+                  y="-9.91821e-05"
+                  width="499.361"
+                  height="992.287"
+                  filterUnits="userSpaceOnUse"
+                  color-interpolation-filters="sRGB"
+                >
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feBlend
+                    mode="normal"
+                    in="SourceGraphic"
+                    in2="BackgroundImageFix"
+                    result="shape"
+                  />
+                  <feGaussianBlur
+                    stdDeviation="22.2"
+                    result="effect1_foregroundBlur_158_761"
+                  />
+                </filter>
+              </defs>
+            </svg>
+          </div>
+
+          <div class="video-container"></div>
+        </section>
+
+        <section class="impact">
+          <div class="title">
+            <h2><span>Impacto</span> real</h2>
+          </div>
+
+          <div class="impact__content">
+            <article class="impact__card show-y">
+              <div class="circle show-y">3x</div>
+              <h3>3x Mais Conversões</h3>
+              <p>
+                Leads atendidos em até 5 minutos convertem 3x mais do que os
+                atendidos após 30 minutos
+              </p>
+            </article>
+
+            <article class="impact__card show-y">
+              <div class="circle show-y">24h</div>
+              <h3>60% Redução de Custos</h3>
+              <p>
+                Empresas relatam redução de até 60% nos custos operacionais com
+                automação de processos manuais.
+              </p>
+            </article>
+
+            <article class="impact__card show-y">
+              <div class="circle show-y">60%</div>
+              <h3>24/7 Operação Contínua</h3>
+              <p>
+                Vendas e atendimentos acontecem fora do horário comercial,
+                capturando oportunidades que antes eram perdidas
+              </p>
+            </article>
+
+            <article class="impact__card show-y">
+              <div class="circle">40%</div>
+              <h3>40% Mais Leads Qualificados</h3>
+              <p>
+                Com qualificação automática, a equipe de vendas foca apenas nos
+                prospects com maior potencial de fechamento.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="steps">
+          <div class="title">
+            <h2 class="textoAnimado3">
+              Como os <span>Agentes de IA</span> Atuam no Dia a Dia.
+            </h2>
+          </div>
+
+          <div class="steps__cards">
+            <div class="steps__card">
+              <div class="image show-w-blur">
+                <img src="assets/images/step-card-1.png" alt="" />
+
+                <div class="circle">
+                  <div>1</div>
+                </div>
+              </div>
+
+              <div class="card-content">
+                <h3>Atendimento no WhatsApp</h3>
+                <p>Responde, qualifica e direciona automaticamente.</p>
+              </div>
+            </div>
+
+            <div class="steps__card">
+              <div class="image show-w-blur">
+                <img src="assets/images/step-card-2.png" alt="" />
+
+                <div class="circle">
+                  <div>2</div>
+                </div>
+              </div>
+
+              <div class="card-content">
+                <h3>Qualificação de Leads</h3>
+                <p>Identifica e prioriza leads mais quentes e qualificados.</p>
+              </div>
+            </div>
+
+            <div class="steps__card">
+              <div class="image show-w-blur">
+                <img src="assets/images/step-card-3.png" alt="" />
+
+                <div class="circle">
+                  <div>3</div>
+                </div>
+              </div>
+
+              <div class="card-content">
+                <h3>Agendamento Automático</h3>
+                <p>Agendamentos via chat com agenda em tempo real.</p>
+              </div>
+            </div>
+
+            <div class="steps__card">
+              <div class="image show-w-blur">
+                <img src="assets/images/step-card-4.png" alt="" />
+
+                <div class="circle">
+                  <div>4</div>
+                </div>
+              </div>
+
+              <div class="card-content">
+                <h3>Suporte e Integração</h3>
+                <p>Ajuda sempre que sua empresa precisar de suporte.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="cta">
+          <div class="container">
+            <div class="title">
+              <h2>A <span>flow bots</span> é para você!</h2>
+            </div>
+
+            <div class="cta__cards">
+              <div class="cta__card">
+                <header>
+                  <h3>Aumento de Conversão</h3>
+                  <i class="ph ph-handshake"></i>
+                </header>
+                <p>
+                  Leads qualificados e atendidos rapidamente convertem muito
+                  mais. Mais vendas com o mesmo tráfego.
+                </p>
+              </div>
+
+              <div class="cta__card">
+                <header>
+                  <h3>Não fique para trás</h3>
+                  <i class="ph ph-trophy"></i>
+                </header>
+                <p>
+                  Empresas que usam automação e IA crescem mais rápido. Sistemas
+                  inteligentes geram eficiência e novas oportunidades todos os
+                  dias.
+                </p>
+              </div>
+
+              <div class="cta__card">
+                <header>
+                  <h3>Suporte que ajuda</h3>
+                  <i class="ph ph-user-check"></i>
+                </header>
+                <p>
+                  Você conta com suporte contínuo para garantir que tudo
+                  funcione e evolua com seu negócio.
+                </p>
+              </div>
+
+              <div class="cta__card">
+                <header>
+                  <h3>Escalabilidade Real</h3>
+                  <i class="ph ph-user-arrow-fat-line-up"></i>
+                </header>
+                <p>
+                  Atenda 10 ou 10.000 clientes simultaneamente sem aumentar a
+                  equipe ou os custos operacionais.
+                </p>
+              </div>
+
+              <div class="cta__card card-black"></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="footer-wrapper" data-speed="0.1">
+          <img
+            class="footer-deco"
+            src="/assets/images/footer-deco.svg"
+            alt=""
+          />
+          <footer class="footer">
+            <div class="top">
+              <div class="title">
+                <h2 class="textoAnimadoFooter">
+                  Juntos <span>alcançaremos</span> <br />
+                  novos horizontes.
+                </h2>
+                <p class="textoAnimadoFooter">
+                  Entre em contato e arquitetaremos automaçãoes. Juntos
+                  alcançaremos novos clientes e horizontes.
+                </p>
+              </div>
+
+              <p class="textoAnimadoFooter">
+                © Flow Bots 2026 - todos os direitos reservados
+              </p>
+
+              <div class="footer__buttons show-blur">
+                <button class="btn btn--primary">
+                  Fale conosco
+                  <div class="circle">
+                    <i data-feather="arrow-up-right"></i>
+                  </div>
+                </button>
+                <button class="btn btn--secondary">
+                  Voltar
+                  <div class="circle">
+                    <i data-feather="arrow-up"></i>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <div class="social-media show-blur">
+              <h4>
+                FLOW
+                <span>BOTS</span>
+              </h4>
+
+              <a href="" class="btn instagram-btn">
+                instagram
+                <div class="circle">
+                  <i class="ph ph-instagram-logo"></i>
+                </div>
+              </a>
+            </div>
+
+            <img
+              class="bg show-blur"
+              src="assets/images/footer-bg.svg"
+              alt=""
+            />
+          </footer>
+        </div>
       </div>
-
-      <div class="hero-stats">
-        <div class="stat">
-          <div class="stat-num">24/7</div>
-          <div class="stat-label">Chatbots Ativos</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">∞</div>
-          <div class="stat-label">Escalabilidade</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num">2</div>
-          <div class="stat-label">Serviços</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HORÁRIO -->
-    <section class="horario-section" id="horario">
-      <div class="section-tag">Operação</div>
-      <h2 class="section-title reveal">Horário de<br />Funcionamento</h2>
-
-      <div class="horario-grid reveal">
-        <div class="horario-card">
-          <div class="h-label">Abertura</div>
-          <div class="h-time open">14:00</div>
-        </div>
-        <div class="horario-card">
-          <div class="h-label">Encerramento</div>
-          <div class="h-time close">03:00</div>
-        </div>
-      </div>
-
-      <p class="horario-desc reveal">
-        Funcionamos com alta disponibilidade para atender clientes em qualquer
-        momento crítico do negócio. Suporte estendido e implementação ágil —
-        estamos aqui quando você mais precisa.
-      </p>
-    </section>
-
-    <!-- ALERTA -->
-    <div class="alert-bar reveal">
-      <span class="alert-icon">⚠️</span>
-      <p>
-        <strong>Atenção:</strong> Empresas que não automatizam estão
-        literalmente perdendo dinheiro todos os dias. A automação não é mais
-        opcional — é sobrevivência.
-      </p>
     </div>
 
-    <!-- SERVIÇOS -->
-    <section id="servicos">
-      <div class="section-tag">Nossos Serviços</div>
-      <h2 class="section-title reveal">O que a<br />Flow Bots oferece</h2>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
 
-      <div class="servicos-grid">
-        <!-- Card 1 -->
-        <div class="servico-card reveal">
-          <span class="card-icon">🤖</span>
-          <div class="card-price">R$ 2.197</div>
-          <div class="card-title">Chatbots Inteligentes</div>
-          <p class="card-desc">
-            Desenvolvemos chatbots personalizados para empresas que querem
-            automatizar atendimento, aumentar vendas e não perder clientes.
-          </p>
-          <ul class="card-features">
-            <li>Atendimento 24/7 — clientes não esperam horário comercial</li>
-            <li>Respostas instantâneas que aumentam a conversão</li>
-            <li>Redução de custo com equipe de atendimento</li>
-            <li>
-              Escalabilidade: atende 10, 100 ou 1.000 clientes ao mesmo tempo
-            </li>
-            <li>Integração com WhatsApp, Instagram e sites</li>
-            <li>Geração de leads totalmente automática</li>
-          </ul>
-          <a href="#contato" class="card-cta">Contratar agora →</a>
-        </div>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/SplitText.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.1/dist/ScrollSmoother.min.js"></script>
 
-        <!-- Card 2 -->
-        <div class="servico-card reveal">
-          <span class="card-icon">🌐</span>
-          <div class="card-price">R$ 997</div>
-          <div class="card-title">Criação de Sites</div>
-          <p class="card-desc">
-            Sites modernos, rápidos e otimizados para conversão. Presença
-            digital profissional que transmite credibilidade e gera resultados
-            reais.
-          </p>
-          <ul class="card-features">
-            <li>Design moderno e responsivo para todos os dispositivos</li>
-            <li>Otimizado para SEO e velocidade de carregamento</li>
-            <li>Focado em conversão e captação de clientes</li>
-            <li>Integração com ferramentas de marketing digital</li>
-            <li>Entrega ágil com acompanhamento completo</li>
-          </ul>
-          <a href="#contato" class="card-cta">Contratar agora →</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer id="contato">
-      <div>
-        <div class="footer-brand">Flow<span>.</span>Bots</div>
-        <div class="footer-text" style="margin-top: 8px">
-          Automação inteligente para empresas que crescem
-        </div>
-      </div>
-      <div class="footer-badge">
-        <div class="pulse-dot"></div>
-        Operacional — Abertura às 14h
-      </div>
-      <div class="footer-text">
-        © 2026 Flow Bots. Todos os direitos reservados.
-      </div>
-    </footer>
+    <script type="module" src="./assets/js/script.js"></script>
+    <script type="module" src="./assets/js/animations.js"></script>
 
     <script>
-      // Custom cursor
-      const cursor = document.getElementById("cursor");
-      const ring = document.getElementById("cursorRing");
-      let mx = 0,
-        my = 0,
-        rx = 0,
-        ry = 0;
-
-      document.addEventListener("mousemove", (e) => {
-        mx = e.clientX;
-        my = e.clientY;
-        cursor.style.left = mx + "px";
-        cursor.style.top = my + "px";
-      });
-
-      function animateRing() {
-        rx += (mx - rx) * 0.12;
-        ry += (my - ry) * 0.12;
-        ring.style.left = rx + "px";
-        ring.style.top = ry + "px";
-        requestAnimationFrame(animateRing);
-      }
-      animateRing();
-
-      // Scroll reveal
-      const reveals = document.querySelectorAll(".reveal");
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e, i) => {
-            if (e.isIntersecting) {
-              setTimeout(() => e.target.classList.add("visible"), i * 80);
-            }
-          });
-        },
-        { threshold: 0.12 },
-      );
-
-      reveals.forEach((el) => observer.observe(el));
+      feather.replace();
     </script>
   </body>
 </html>
