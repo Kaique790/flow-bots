@@ -48,7 +48,52 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    position: relative;
+    overflow: hidden; // 👈 ESSENCIAL
   }
+
+  // ======================
+  // ICON ANIMATION
+  // ======================
+  .icon-wrapper {
+    position: relative;
+    width: 24px;
+    height: 24px;
+  }
+
+  .icon {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .icon.top {
+    transform: translateY(0);
+  }
+
+  .icon.bottom {
+    transform: translateY(150%);
+  }
+
+  &:hover {
+    .icon.top {
+      transform: translateY(-150%);
+    }
+
+    .icon.bottom {
+      transform: translateY(0);
+    }
+  }
+
+  // ======================
+  // VARIANTS
+  // ======================
 
   &--primary {
     background-color: #62ff3b;

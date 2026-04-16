@@ -4,7 +4,7 @@ export function initFooter() {
     opacity: 1,
     scrollTrigger: {
       trigger: ".cta",
-      start: "top+=100",
+      start: "top+=101",
       scrub: 1,
       toggleActions: "play none none reverse",
     },
@@ -28,7 +28,7 @@ export function initFooter() {
   const tl = gsap.timeline({
     scrollTrigger: {
       trigger: ".footer",
-      start: "top-=150 top",
+      start: "top-=350 top",
       toggleActions: "play none none reverse",
     },
   });

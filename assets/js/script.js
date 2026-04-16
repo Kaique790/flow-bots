@@ -4,6 +4,8 @@ import { initAbout } from "./sections/about.js";
 import { initServices } from "./sections/services.js";
 import { initCta } from "./sections/cta.js";
 import { initProblems } from "./sections/problems.js";
+import { initHeader } from "./sections/header.js";
+
 const larguraTela = window.innerWidth;
 window.addEventListener("resize", () => {
   const larguraAtual = window.innerWidth;
@@ -29,6 +31,7 @@ function loading() {
   }, 1500);
 }
 
+initHeader();
 initProblems();
 initServices();
 initAbout();

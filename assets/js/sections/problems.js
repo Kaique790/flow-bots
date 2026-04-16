@@ -3,11 +3,11 @@ export function initProblems() {
     filter: "blur(20px)",
     scrollTrigger: {
       trigger: ".problems__image",
-      start: "top+=30 center",
+      start: "top-=30 center",
     },
   });
 
-  const footerTl = gsap.timeline({
+  const problemsTl = gsap.timeline({
     scrollTrigger: {
       trigger: ".problems",
       scrub: 1,
@@ -17,7 +17,7 @@ export function initProblems() {
     },
   });
 
-  footerTl.from(".transition div", {
+  problemsTl.from(".transition div", {
     height: "0%",
     duration: 1,
     stagger: 0.08,

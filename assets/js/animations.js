@@ -1,9 +1,21 @@
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
+let smoother;
+
 if (window.innerWidth > 1000) {
-  ScrollSmoother.create({
+  smoother = ScrollSmoother.create({
     smooth: 2,
     effects: true,
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      const target = link.getAttribute("href");
+
+      smoother.scrollTo(target, true, "top top");
+    });
   });
 }
 
