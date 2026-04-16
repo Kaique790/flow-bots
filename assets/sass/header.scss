@@ -18,6 +18,8 @@
 
   z-index: 1000;
 
+  mix-blend-mode: difference;
+
   &__background {
     position: absolute;
     left: $space-2;
