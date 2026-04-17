@@ -25,7 +25,7 @@ export function initAbout() {
     "-=.5",
   );
 
-  aboutTl.from(".about__buttons .btn", {
+  aboutTl.from(".about__show-blur", {
     opacity: 0,
     y: 60,
     scale: 0.95,

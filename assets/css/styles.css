@@ -1324,7 +1324,6 @@ ul li .services__card--light::before {
 
 .footer {
   position: relative;
-  padding-top: 2.25rem;
   overflow: hidden;
   z-index: -1;
   max-width: 1340px;
@@ -1493,6 +1492,10 @@ ul li .services__card--light::before {
     left: 0;
     opacity: 0.36;
   }
+}
+
+.footer {
+  margin-top: -10rem;
 }
 
 * {

@@ -8,7 +8,6 @@
 
 .footer {
   position: relative;
-  padding-top: 2.25rem;
   overflow: hidden;
   z-index: -1;
 
@@ -211,4 +210,8 @@
     left: 0;
     opacity: 0.36;
   }
+}
+
+.footer {
+  margin-top: -10rem;
 }

@@ -1,13 +1,28 @@
 export function initFooter() {
   // SHOW FOOTER ELEMENTS ANIMATION
-  gsap.to(".footer-wrapper", {
-    opacity: 1,
-    scrollTrigger: {
-      trigger: ".cta",
-      start: "top+=101",
-      scrub: 1,
-      toggleActions: "play none none reverse",
-    },
+  let mm = gsap.matchMedia();
+
+  mm.add("(max-width: 940px)", () => {
+    gsap.to(".footer-wrapper", {
+      opacity: 1,
+      scrollTrigger: {
+        trigger: ".cta",
+        start: "top top",
+        toggleActions: "play none none reverse",
+      },
+    });
+  });
+
+  mm.add("(min-width: 941px)", () => {
+    gsap.to(".footer-wrapper", {
+      opacity: 1,
+      scrollTrigger: {
+        trigger: ".cta",
+        start: "top+=101",
+        scrub: 1,
+        toggleActions: "play none none reverse",
+      },
+    });
   });
 
   gsap.from(".footer-deco", {

@@ -12,7 +12,7 @@ export function initProblems() {
       trigger: ".problems",
       scrub: 1,
       pin: true,
-      start: "top top",
+      start: "bottom bottom",
       end: window.innerWidth >= 490 ? "+=1000" : "+=400",
     },
   });
